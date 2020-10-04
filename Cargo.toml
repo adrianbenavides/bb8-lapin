@@ -1,6 +1,6 @@
 [package]
 name = "bb8-lapin"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Adrian Benavides <adri.benavides312@gmail.com>"]
 repository = "https://github.com/adrianbenavides/bb8-lapin"
 description = "r2d2-lapin, but for async tokio based connections"
