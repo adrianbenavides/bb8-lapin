@@ -1,7 +1,7 @@
-[![docs](https://docs.rs/bb8-lapin/badge.svg)](https://docs.rs/r2d2-lapin)
+[![docs](https://docs.rs/bb8-lapin/badge.svg)](https://docs.rs/bb8-lapin)
 [![crates.io-version](https://img.shields.io/crates/v/bb8-lapin)](https://crates.io/crates/bb8-lapin)
-[![tests](https://github.com/adrianbenavides/r2d2-lapin/workflows/Tests/badge.svg)](https://github.com/adrianbenavides/bb8-lapin/actions)
-[![audit](https://github.com/adrianbenavides/r2d2-lapin/workflows/Audit/badge.svg)](https://github.com/adrianbenavides/bb8-lapin/actions)
+[![tests](https://github.com/adrianbenavides/bb8-lapin/workflows/Tests/badge.svg)](https://github.com/adrianbenavides/bb8-lapin/actions)
+[![audit](https://github.com/adrianbenavides/bb8-lapin/workflows/Audit/badge.svg)](https://github.com/adrianbenavides/bb8-lapin/actions)
 [![crates.io-license](https://img.shields.io/crates/l/bb8-lapin)](LICENSE)
 
 [Lapin](https://github.com/CleverCloud/lapin) support for the [bb8](https://github.com/khuey/bb8) connection pool.
