@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build_and_test:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        rust: [nightly, beta, stable, 1.45.0]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set current week of the year in environnement
+        run: echo "::set-env name=CURRENT_WEEK::$(date +%V)"
+
+      - name: Start RabbitMQ
+        uses: getong/rabbitmq-action@v1.2
+        with:
+          rabbitmq user: 'guest'
+          rabbitmq password: 'guest'
+          rabbitmq vhost: '/'
+
+      - name: Set RabbitMQ URL in environment
+        run: echo "::set-env name=TEST_AMQP_URL::amqp://guest:guest@127.0.0.1:5672//"
+
+      - name: Install latest ${{ matrix.rust }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          profile: minimal
+          override: true
+
+      - name: Run cargo check
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: --all --bins --examples --tests --all-features
+
+      - name: Run cargo check (without dev-dependencies to catch missing feature flags)
+        if: startsWith(matrix.rust, 'nightly')
+        uses: actions-rs/cargo@v1
+        with:
+          command: check
+          args: -Z features=dev_dep
+
+      - name: Run cargo test
+        uses: actions-rs/cargo@v1
+        with:
+          command: test
