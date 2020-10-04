@@ -5,7 +5,7 @@ on:
   pull_request:
 
 jobs:
-  build_and_test:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -14,9 +14,6 @@ jobs:
         rust: [nightly, beta, stable, 1.45.0]
     steps:
       - uses: actions/checkout@v2
-
-      - name: Set current week of the year in environnement
-        run: echo "::set-env name=CURRENT_WEEK::$(date +%V)"
 
       - name: Start RabbitMQ
         uses: getong/rabbitmq-action@v1.2
@@ -52,3 +49,32 @@ jobs:
         uses: actions-rs/cargo@v1
         with:
           command: test
+
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Start RabbitMQ
+        uses: getong/rabbitmq-action@v1.2
+        with:
+          rabbitmq user: 'guest'
+          rabbitmq password: 'guest'
+          rabbitmq vhost: '/'
+
+      - name: Set RabbitMQ URL in environment
+        run: echo "::set-env name=TEST_AMQP_URL::amqp://guest:guest@127.0.0.1:5672//"
+
+      - uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+
+      - name: Run cargo-tarpaulin
+        uses: actions-rs/tarpaulin@v0.1
+
+      - name: Archive code coverage results
+        uses: actions/upload-artifact@v2
+        with:
+          name: code-coverage-report
+          path: cobertura.xml
