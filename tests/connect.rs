@@ -24,10 +24,10 @@ async fn can_connect() {
     let (tx, mut rx) = tokio::sync::mpsc::channel(n_tasks);
     for i in 0..n_tasks {
         let pool = pool.clone();
-        let mut tx = tx.clone();
+        let tx = tx.clone();
         tokio::spawn(async move {
             let delay_ms = n_tasks - i;
-            tokio::time::delay_for(tokio::time::Duration::from_millis(delay_ms as u64)).await;
+            tokio::time::sleep(tokio::time::Duration::from_millis(delay_ms as u64)).await;
             let conn = pool.get().await.expect("Should get connection");
             tx.send(conn.create_channel().await).await.unwrap();
         });
