@@ -23,7 +23,7 @@ jobs:
           rabbitmq vhost: '/'
 
       - name: Set RabbitMQ URL in environment
-        run: echo "::set-env name=TEST_AMQP_URL::amqp://guest:guest@127.0.0.1:5672//"
+        run: echo "TEST_AMQP_URL=amqp://guest:guest@127.0.0.1:5672//" >> $GITHUB_ENV
 
       - name: Install latest ${{ matrix.rust }}
         uses: actions-rs/toolchain@v1
@@ -63,7 +63,7 @@ jobs:
           rabbitmq vhost: '/'
 
       - name: Set RabbitMQ URL in environment
-        run: echo "::set-env name=TEST_AMQP_URL::amqp://guest:guest@127.0.0.1:5672//"
+        run: echo "TEST_AMQP_URL=amqp://guest:guest@127.0.0.1:5672//" >> $GITHUB_ENV
 
       - uses: actions-rs/toolchain@v1
         with:
