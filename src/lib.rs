@@ -11,6 +11,7 @@ use async_trait::async_trait;
 use lapin::protocol::{AMQPError, AMQPErrorKind, AMQPHardError};
 use lapin::types::ShortString;
 use lapin::{ConnectionProperties, ConnectionState};
+use std::fmt;
 
 /// A `bb8::ManageConnection` implementation for `lapin::Connection`s.
 ///
@@ -36,7 +37,6 @@ use lapin::{ConnectionProperties, ConnectionState};
 ///     }
 /// }
 /// ```
-#[derive(Debug)]
 pub struct LapinConnectionManager {
     amqp_address: String,
     conn_properties: ConnectionProperties,
@@ -83,5 +83,13 @@ impl bb8::ManageConnection for LapinConnectionManager {
     fn has_broken(&self, conn: &mut Self::Connection) -> bool {
         let broken_states = vec![ConnectionState::Closed, ConnectionState::Error];
         broken_states.contains(&conn.status().state())
+    }
+}
+
+impl fmt::Debug for LapinConnectionManager {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("LapinConnectionManager")
+            .field("amqp_address", &self.amqp_address)
+            .finish()
     }
 }
