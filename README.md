@@ -30,7 +30,9 @@ async fn example() {
 }
 ```
 
+See files in the examples folder for more examples.
+
 ## Build-time Requirements
-The crate is tested on `ubuntu-latest` against the following rust versions: nightly, beta, stable and 1.45.0.
+The crate is tested on `ubuntu-latest` against the nightly and stable rust versions.
 It is possible that it works with older versions as well but this is not tested.
 Please see the details of the bb8 and lapin crates about their requirements.

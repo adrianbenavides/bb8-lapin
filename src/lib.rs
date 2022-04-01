@@ -68,7 +68,7 @@ impl bb8::ManageConnection for LapinConnectionManager {
         lapin::Connection::connect(&self.amqp_address, self.conn_properties.clone()).await
     }
 
-    async fn is_valid(&self, conn: &mut bb8::PooledConnection<'_, Self>) -> Result<(), Self::Error> {
+    async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
         let valid_states = vec![ConnectionState::Initial, ConnectionState::Connecting, ConnectionState::Connected];
         if valid_states.contains(&conn.status().state()) {
             Ok(())
