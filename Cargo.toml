@@ -10,7 +10,7 @@ edition = "2021"
 [dependencies]
 async-trait = "0.1"
 bb8 = "0.8"
-lapin = "2.0"
+lapin = "2.1"
 
 [dev-dependencies]
 dotenv = "0.15"
