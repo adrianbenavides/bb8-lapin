@@ -7,7 +7,6 @@ pub use lapin;
 /// Basic types to create a `LapinConnectionManager` instance.
 pub mod prelude;
 
-use async_trait::async_trait;
 use lapin::protocol::{AMQPError, AMQPErrorKind, AMQPHardError};
 use lapin::types::ShortString;
 use lapin::{ConnectionProperties, ConnectionState};
@@ -59,7 +58,6 @@ impl LapinConnectionManager {
     }
 }
 
-#[async_trait]
 impl bb8::ManageConnection for LapinConnectionManager {
     type Connection = lapin::Connection;
     type Error = lapin::Error;
@@ -69,7 +67,7 @@ impl bb8::ManageConnection for LapinConnectionManager {
     }
 
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
-        let valid_states = vec![ConnectionState::Initial, ConnectionState::Connecting, ConnectionState::Connected];
+        let valid_states = [ConnectionState::Initial, ConnectionState::Connecting, ConnectionState::Connected];
         if valid_states.contains(&conn.status().state()) {
             Ok(())
         } else {
@@ -81,7 +79,7 @@ impl bb8::ManageConnection for LapinConnectionManager {
     }
 
     fn has_broken(&self, conn: &mut Self::Connection) -> bool {
-        let broken_states = vec![ConnectionState::Closed, ConnectionState::Error];
+        let broken_states = [ConnectionState::Closed, ConnectionState::Error];
         broken_states.contains(&conn.status().state())
     }
 }

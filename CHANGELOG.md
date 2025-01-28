@@ -1,3 +1,10 @@
+## 0.6.0 (2025-01-28)
+
+**Features**
+
+* Update to bb8 0.9.0
+* Update to lapin 2.5
+
 ## 0.5.0 (2023-03-28)
 
 **Features**
