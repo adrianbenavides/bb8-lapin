@@ -1,6 +1,6 @@
 [package]
 name = "bb8-lapin"
-version = "0.6.0"
+version = "0.7.0"
 authors = ["Adrian Benavides <adri.benavides312@gmail.com>"]
 repository = "https://github.com/adrianbenavides/bb8-lapin"
 description = "r2d2-lapin, but for async tokio based connections"
@@ -9,11 +9,11 @@ edition = "2021"
 
 [dependencies]
 bb8 = "0.9"
-lapin = "2.5"
+lapin = "3.3"
 
 [dev-dependencies]
 dotenv = "0.15"
 lazy_static = "1.4"
 tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
-tokio-executor-trait = "2.1"
-tokio-reactor-trait = "1.1"
+tokio-executor-trait = "3.1"
+tokio-reactor-trait = "4.1"

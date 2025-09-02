@@ -16,7 +16,7 @@ async fn can_connect() {
         &AMQP_URL,
         ConnectionProperties::default()
             .with_executor(TokioExecutor::current())
-            .with_reactor(TokioReactor),
+            .with_reactor(TokioReactor::current()),
     );
     let pool = Arc::new(
         bb8::Pool::builder()

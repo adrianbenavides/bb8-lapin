@@ -60,10 +60,12 @@ impl LapinConnectionManager {
 
 impl bb8::ManageConnection for LapinConnectionManager {
     type Connection = lapin::Connection;
-    type Error = lapin::Error;
+    type Error = lapin::ErrorKind;
 
     async fn connect(&self) -> Result<Self::Connection, Self::Error> {
-        lapin::Connection::connect(&self.amqp_address, self.conn_properties.clone()).await
+        lapin::Connection::connect(&self.amqp_address, self.conn_properties.clone())
+            .await
+            .map_err(|e| e.kind().to_owned())
     }
 
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
@@ -71,7 +73,7 @@ impl bb8::ManageConnection for LapinConnectionManager {
         if valid_states.contains(&conn.status().state()) {
             Ok(())
         } else {
-            Err(lapin::Error::ProtocolError(AMQPError::new(
+            Err(lapin::ErrorKind::ProtocolError(AMQPError::new(
                 AMQPErrorKind::Hard(AMQPHardError::CONNECTIONFORCED),
                 ShortString::from("Invalid connection"),
             )))

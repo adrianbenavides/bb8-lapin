@@ -1,3 +1,13 @@
+## 0.7.0 (2025-09-02)
+
+**Features**
+
+* Update to lapin 3.3.
+
+**Note**: `LapinConnectionManager`'s `Error` type has changed to
+`lapin::ErrorKind` to accommodate the type change in the lapin crate since
+version 3.0.
+
 ## 0.6.0 (2025-01-28)
 
 **Features**
