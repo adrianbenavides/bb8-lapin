@@ -1,3 +1,17 @@
+## 0.8.0 (upcoming)
+
+**Features**
+
+* Update to lapin 4, with support for lapin 4.0.2+
+
+**Breaking changes**:
+* `LapinConnectionManager`'s constructor `new` takes a
+`lapin::ConnectionBuilder` struct, which provides the URI, connection properties
+and the runtime to use. See the documentation for [ConnectionBuilder](https://docs.rs/lapin/latest/lapin/struct.ConnectionBuilder.html)
+for details.
+* `LapinConnectionManager` is now a generic type to accommodate a choice of
+runtime as expressed through the `async-rs` crate.
+
 ## 0.7.0 (2025-09-02)
 
 **Features**

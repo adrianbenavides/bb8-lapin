@@ -1,7 +1,5 @@
 use bb8_lapin::prelude::*;
 use std::sync::Arc;
-use tokio_executor_trait::Tokio as TokioExecutor;
-use tokio_reactor_trait::Tokio as TokioReactor;
 
 lazy_static::lazy_static! {
     static ref AMQP_URL: String = {
@@ -12,12 +10,8 @@ lazy_static::lazy_static! {
 
 #[tokio::test]
 async fn can_connect() {
-    let manager = LapinConnectionManager::new(
-        &AMQP_URL,
-        ConnectionProperties::default()
-            .with_executor(TokioExecutor::current())
-            .with_reactor(TokioReactor::current()),
-    );
+    let builder = ConnectionBuilder::new_with_runtime(Runtime::tokio_current()).with_uri_str(AMQP_URL.to_owned());
+    let manager = LapinConnectionManager::new(builder);
     let pool = Arc::new(
         bb8::Pool::builder()
             .max_size(2)
