@@ -7,10 +7,10 @@ pub use lapin;
 /// Basic types to create a `LapinConnectionManager` instance.
 pub mod prelude;
 
+use async_rs::traits::RuntimeKit;
 use lapin::protocol::{AMQPError, AMQPErrorKind, AMQPHardError};
 use lapin::types::ShortString;
-use lapin::{ConnectionProperties, ConnectionState};
-use std::fmt;
+use lapin::ConnectionBuilder;
 
 /// A `bb8::ManageConnection` implementation for `lapin::Connection`s.
 ///
@@ -19,7 +19,11 @@ use std::fmt;
 /// use bb8_lapin::prelude::*;
 ///
 /// async fn example() {
-///     let manager = LapinConnectionManager::new("amqp://guest:guest@127.0.0.1:5672//", ConnectionProperties::default());
+///     let manager = LapinConnectionManager::new(
+///         DefaultConnectionBuilder::new()
+///             .unwrap()
+///             .with_uri_str("amqp://guest:guest@127.0.0.1:5672//".to_string())
+///     );
 ///     let pool = bb8::Pool::builder()
 ///         .max_size(15)
 ///         .build(manager)
@@ -36,41 +40,41 @@ use std::fmt;
 ///     }
 /// }
 /// ```
-pub struct LapinConnectionManager {
-    amqp_address: String,
-    conn_properties: ConnectionProperties,
+#[derive(Debug)]
+pub struct LapinConnectionManager<RK: RuntimeKit + Send + Sync + Clone + 'static> {
+    conn_builder: ConnectionBuilder<RK>,
 }
 
-impl LapinConnectionManager {
+impl<RK: RuntimeKit + Send + Sync + Clone + 'static> LapinConnectionManager<RK> {
     /// Initialize the connection manager with the data needed to create new connections.
-    /// Refer to the documentation of [`lapin::ConnectionProperties`](https://docs.rs/lapin/1.2.8/lapin/struct.ConnectionProperties.html)
-    /// for further details on the available connection parameters.
+    /// Refer to the documentation of [`lapin::ConnectionBuilder`](https://docs.rs/lapin/latest/lapin/struct.ConnectionBuilder.html)
+    /// for further details on connection settings.
     ///
     /// # Example
     /// ```
-    /// let manager = bb8_lapin::LapinConnectionManager::new("amqp://guest:guest@127.0.0.1:5672//", lapin::ConnectionProperties::default());
+    /// # tokio_test::block_on(async {
+    /// let manager = bb8_lapin::LapinConnectionManager::new(
+    ///     lapin::DefaultConnectionBuilder::new().unwrap()
+    ///         .with_uri_str("amqp://guest:guest@127.0.0.1:5672//".to_string())
+    /// );
+    /// # })
     /// ```
-    pub fn new(amqp_address: &str, conn_properties: ConnectionProperties) -> Self {
-        Self {
-            amqp_address: amqp_address.to_string(),
-            conn_properties,
-        }
+    pub fn new(conn_builder: ConnectionBuilder<RK>) -> Self {
+        Self { conn_builder }
     }
 }
 
-impl bb8::ManageConnection for LapinConnectionManager {
+impl<RK: RuntimeKit + Send + Sync + Clone + 'static> bb8::ManageConnection for LapinConnectionManager<RK> {
     type Connection = lapin::Connection;
     type Error = lapin::ErrorKind;
 
     async fn connect(&self) -> Result<Self::Connection, Self::Error> {
-        lapin::Connection::connect(&self.amqp_address, self.conn_properties.clone())
-            .await
-            .map_err(|e| e.kind().to_owned())
+        self.conn_builder.connect().await.map_err(|e| e.kind().to_owned())
     }
 
     async fn is_valid(&self, conn: &mut Self::Connection) -> Result<(), Self::Error> {
-        let valid_states = [ConnectionState::Initial, ConnectionState::Connecting, ConnectionState::Connected];
-        if valid_states.contains(&conn.status().state()) {
+        let conn_status = conn.status();
+        if !conn_status.closing() && !conn_status.closed() && !conn_status.errored() {
             Ok(())
         } else {
             Err(lapin::ErrorKind::ProtocolError(AMQPError::new(
@@ -81,15 +85,7 @@ impl bb8::ManageConnection for LapinConnectionManager {
     }
 
     fn has_broken(&self, conn: &mut Self::Connection) -> bool {
-        let broken_states = [ConnectionState::Closed, ConnectionState::Error];
-        broken_states.contains(&conn.status().state())
-    }
-}
-
-impl fmt::Debug for LapinConnectionManager {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.debug_struct("LapinConnectionManager")
-            .field("amqp_address", &self.amqp_address)
-            .finish()
+        let conn_status = conn.status();
+        conn_status.closed() || conn_status.errored()
     }
 }

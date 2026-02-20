@@ -4,16 +4,19 @@
 [![audit](https://github.com/adrianbenavides/bb8-lapin/workflows/Audit/badge.svg)](https://github.com/adrianbenavides/bb8-lapin/actions)
 [![crates.io-license](https://img.shields.io/crates/l/bb8-lapin)](LICENSE)
 
-[Lapin](https://github.com/CleverCloud/lapin) support for the [bb8](https://github.com/khuey/bb8) connection pool.
+[Lapin](https://github.com/amqp-rs/lapin) support for the [bb8](https://github.com/djc/bb8) connection pool.
 
 ## Usage
-See the documentation of bb8 for the details on how to use the connection pool.
+See the documentation of bb8 for the details on how to use the connection pool,
+and the documentation of lapin for how to create a ConnectionBuilder.
 
 ```rust
 use bb8_lapin::prelude::*;
 
 async fn example() {
-    let manager = LapinConnectionManager::new("amqp://guest:guest@127.0.0.1:5672//", ConnectionProperties::default());
+    let builder = DefaultConnectionBuilder::new().unwrap()
+        .with_uri_str("amqp://guest:guest@127.0.0.1:5672//".to_string());
+    let manager = LapinConnectionManager::new(builder);
     let pool = bb8::Pool::builder()
         .max_size(15)
         .build(manager)
