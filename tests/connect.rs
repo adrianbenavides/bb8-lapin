@@ -3,7 +3,6 @@ use std::sync::Arc;
 
 lazy_static::lazy_static! {
     static ref AMQP_URL: String = {
-        dotenv::dotenv().ok();
         std::env::var("TEST_AMQP_URL").unwrap_or_else(|_| "amqp://guest:guest@127.0.0.1:5672//".to_string())
     };
 }
