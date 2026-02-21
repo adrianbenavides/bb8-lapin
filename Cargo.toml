@@ -8,12 +8,12 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-async-rs = "^0.8"
-bb8 = "0.9"
+async-rs = { version = "^0.8.0", default-features = false }
+bb8 = "~0.9.1"
 lapin = "~4.0.2"
 
 [dev-dependencies]
 dotenv = "0.15"
 lazy_static = "1.4"
-tokio = { version = "1", features = ["rt-multi-thread", "macros", "time", "sync"] }
+tokio = { version = "1", features = ["macros"] }
 tokio-test = "0.4"
