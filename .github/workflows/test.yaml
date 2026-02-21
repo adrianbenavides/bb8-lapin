@@ -6,14 +6,13 @@ on:
 
 jobs:
   test:
-    runs-on: ${{ matrix.os }}
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest]
-        rust: [nightly, stable]
+        rust: [stable, nightly]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
 
       - name: Start RabbitMQ
         uses: getong/rabbitmq-action@v1.2
@@ -25,27 +24,15 @@ jobs:
       - name: Set RabbitMQ URL in environment
         run: echo "TEST_AMQP_URL=amqp://guest:guest@127.0.0.1:5672//" >> $GITHUB_ENV
 
-      - name: Install latest ${{ matrix.rust }}
-        uses: actions-rs/toolchain@v1
+      - uses: dtolnay/rust-toolchain@master
         with:
           toolchain: ${{ matrix.rust }}
-          profile: minimal
-          override: true
 
       - name: Run cargo check
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: --all --bins --examples --tests --all-features
-
-      - name: Run cargo check (without dev-dependencies to catch missing feature flags)
-        if: startsWith(matrix.rust, 'nightly')
-        uses: actions-rs/cargo@v1
-        with:
-          command: check
-          args: -Z features=dev_dep
+        run: cargo check --all-targets --all-features
 
       - name: Run cargo test
-        uses: actions-rs/cargo@v1
-        with:
-          command: test
+        run: cargo test --all-features
+
+      - name: Run cargo doc tests
+        run: cargo test --doc
