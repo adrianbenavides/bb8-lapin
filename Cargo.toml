@@ -8,7 +8,7 @@ license = "MIT"
 edition = "2021"
 
 [dependencies]
-async-rs = { version = "^0.8.0", default-features = false }
+async-rs = { version = "^0.8.4", default-features = false }
 bb8 = "~0.9.1"
 lapin = "4.0.2"
 
