@@ -12,7 +12,7 @@ jobs:
       matrix:
         rust: [stable, nightly]
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Start RabbitMQ
         uses: getong/rabbitmq-action@v1.2
